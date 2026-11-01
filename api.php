@@ -10,11 +10,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-$host = "localhost";
-$user = "root";
-$pass = "";
-$dbname = "reclaimx_demo_db"; // Or reclaimx_db depending on which DB you are targeting
-
+$host = "sql108.infinityfree.com"; // MySQL Server from phpMyAdmin header
+$user = "if0_43327913";            // Your InfinityFree Username
+$pass = "YOUR_VPANEL_PASSWORD";     // Your account password
+$dbname = "if0_43327913_reclaimx_db"; // Database Name from header
 $conn = new mysqli($host, $user, $pass, $dbname);
 
 if ($conn->connect_error) {
