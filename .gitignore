@@ -1,0 +1,13 @@
+# OS & IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node modules / Capacitor build artifacts (if present)
+node_modules/
+android/
+ios/
+
+# Logs & temp files
+*.log

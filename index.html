@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReclaimX - Cloud Belongings Portal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0b1120] text-slate-100 font-sans min-h-screen flex">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="w-64 bg-[#0f172a] border-r border-slate-800 flex flex-col justify-between p-4 min-h-screen shrink-0">
+        <div class="space-y-6">
+            <!-- App Branding -->
+            <div class="flex items-center space-x-3 px-2 cursor-pointer" onclick="switchTab('dashboard')">
+                <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-white text-base leading-tight">ReclaimX</h1>
+                    <p class="text-[11px] text-slate-400">Cloud Belongings Portal</p>
+                </div>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="space-y-1">
+                <button id="nav-dashboard" onclick="switchTab('dashboard')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white transition-all">
+                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button id="nav-browse" onclick="switchTab('browse')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                    <span>Browse Feed</span>
+                </button>
+                <button id="nav-matcher" onclick="switchTab('matcher')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all">
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+                        <span>Smart Matcher</span>
+                    </div>
+                    <span id="badge-matcher" class="bg-slate-800 text-amber-300 border border-slate-700 text-[10px] px-1.5 py-0.5 rounded-full font-bold">0</span>
+                </button>
+            </nav>
+
+            <!-- File Report Actions -->
+            <div class="pt-4 border-t border-slate-800 space-y-2">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2">File Report</p>
+                <button onclick="openReportModal('lost')" class="w-full flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span>Lost Belonging</span>
+                </button>
+                <button onclick="openReportModal('found')" class="w-full flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span>Found Belonging</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sync Status Footer -->
+        <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500 px-2">
+            <div>
+                <p class="leading-none text-slate-400">Live Sync:</p>
+                <p class="text-[10px] text-slate-500 mt-0.5">PHP & MySQL Database</p>
+            </div>
+            <span class="text-emerald-400 font-bold text-[10px] flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Connected
+            </span>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 p-8 overflow-y-auto max-w-7xl">
+
+        <!-- TAB 1: DASHBOARD VIEW -->
+        <section id="tab-dashboard" class="space-y-6">
+            
+            <!-- Hero Header Banner -->
+            <div class="bg-gradient-to-r from-indigo-950/60 via-slate-900 to-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 bg-indigo-500/20 border border-indigo-500/30 rounded-full text-[10px] font-bold text-indigo-300 uppercase tracking-wider mb-3">
+                    <i data-lucide="refresh-cw" class="w-3 h-3 text-indigo-400"></i>
+                    <span>Realtime Online Sync Connected</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Reclaim Misplaced Campus Property</h2>
+                <p class="text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl">
+                    Submit lost property or report recovered items. Reports automatically sync across all online users in real-time.
+                </p>
+                <div class="mt-5 flex items-center space-x-3">
+                    <button onclick="openReportModal('lost')" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all flex items-center space-x-1.5 shadow-lg shadow-rose-600/20">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Report Lost Item</span>
+                    </button>
+                    <button onclick="openReportModal('found')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex items-center space-x-1.5 shadow-lg shadow-emerald-600/20">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Report Found Item</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Statistics Matrix -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Lost</p>
+                        <h3 id="stat-lost" class="text-2xl font-bold text-white mt-2">0</h3>
+                        <p class="text-[11px] text-slate-500 mt-1">Missing belongings</p>
+                    </div>
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-400"></i>
+                </div>
+
+                <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Found</p>
+                        <h3 id="stat-found" class="text-2xl font-bold text-white mt-2">0</h3>
+                        <p class="text-[11px] text-slate-500 mt-1">Safely turned in</p>
+                    </div>
+                    <i data-lucide="package" class="w-5 h-5 text-emerald-400"></i>
+                </div>
+
+                <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Matches</p>
+                        <h3 id="stat-matches" class="text-2xl font-bold text-amber-300 mt-2">0</h3>
+                        <p class="text-[11px] text-slate-500 mt-1">High confidence</p>
+                    </div>
+                    <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i>
+                </div>
+
+                <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Claimed</p>
+                        <h3 id="stat-resolved" class="text-2xl font-bold text-white mt-2">0</h3>
+                        <p class="text-[11px] text-slate-500 mt-1">Reunited online</p>
+                    </div>
+                    <i data-lucide="heart-handshake" class="w-5 h-5 text-indigo-400"></i>
+                </div>
+            </div>
+
+            <!-- Smart Cross-Match Highlight Alert Banner -->
+            <div id="match-banner" class="hidden bg-slate-900 border border-amber-500/30 rounded-2xl p-4 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2.5 bg-amber-500/20 text-amber-300 rounded-xl border border-amber-500/30">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm">Smart Cross-Match Detected!</h4>
+                        <p class="text-xs text-slate-400">Found <span id="banner-match-count" class="text-amber-300 font-bold">0 candidate pairs</span> with high attribute similarity.</p>
+                    </div>
+                </div>
+                <button onclick="switchTab('matcher')" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl flex items-center space-x-1">
+                    <span>Review Candidates</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Recent Submissions Header -->
+            <div class="flex items-center justify-between pt-2">
+                <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                    <i data-lucide="clock" class="w-4 h-4 text-indigo-400"></i>
+                    <span>Realtime Live Submissions</span>
+                </h3>
+                <button onclick="switchTab('browse')" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center space-x-1">
+                    <span>View All</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                </button>
+            </div>
+
+            <!-- Items Feed Grid -->
+            <div id="dashboard-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- TAB 2: BROWSE FEED VIEW -->
+        <section id="tab-browse" class="hidden space-y-6">
+            <div class="bg-[#0f172a] border border-slate-800 p-4 rounded-2xl flex flex-col md:flex-row gap-3 justify-between">
+                <div class="relative flex-1">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-3"></i>
+                    <input id="search-input" oninput="renderBrowse()" type="text" placeholder="Search title, keywords, location..." class="w-full bg-[#0b1120] border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                </div>
+                <select id="filter-type" onchange="renderBrowse()" class="bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    <option value="all">All Submissions</option>
+                    <option value="lost">Lost Only</option>
+                    <option value="found">Found Only</option>
+                    <option value="resolved">Claimed / Resolved</option>
+                </select>
+            </div>
+            <div id="browse-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- TAB 3: SMART MATCHER VIEW -->
+        <section id="tab-matcher" class="hidden space-y-6">
+            <div class="bg-[#0f172a] border border-amber-500/30 p-6 rounded-2xl flex items-center space-x-4">
+                <div class="p-3 bg-amber-500/20 text-amber-300 rounded-xl border border-amber-500/30">
+                    <i data-lucide="sparkles" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-white">Smart Attribute Cross-Matcher</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Automated similarity comparison across Category (40%), Color (30%), and Location (30%).</p>
+                </div>
+            </div>
+            <div id="matcher-feed" class="space-y-4"></div>
+        </section>
+
+    </main>
+
+    <!-- MODAL FOR REPORTING ITEM -->
+    <div id="report-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-[#0f172a] border border-slate-800 max-w-md w-full p-6 rounded-2xl shadow-2xl">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+                <h3 id="modal-title" class="text-base font-bold text-white">Report Item</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form onsubmit="submitReport(event)" class="space-y-3 mt-4">
+                <input type="hidden" id="form-type" value="lost">
+                
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Title *</label>
+                    <input type="text" id="form-title" required placeholder="e.g. Scientific Calculator Casio FX-991EX" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div class="grid grid-cols-3 gap-2">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Category</label>
+                        <select id="form-category" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-xs text-white">
+                            <option>Calculator</option><option>ID Card</option><option>Water Bottle</option><option>Electronics</option><option>Notebook</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Color</label>
+                        <select id="form-color" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-xs text-white">
+                            <option>Black</option><option>Blue</option><option>Silver/Grey</option><option>Red</option><option>White</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Location</label>
+                        <select id="form-location" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-xs text-white">
+                            <option>Library</option><option>Canteen</option><option>Ground Floor Lab</option><option>Seminar Hall</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Reporter Name</label>
+                        <input type="text" id="form-name" placeholder="Alex Rivera" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Phone Number</label>
+                        <input type="text" id="form-phone" placeholder="+1 (555) 000-0000" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">College Email *</label>
+                    <input type="email" id="form-email" required placeholder="alex.r@college.edu" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Description</label>
+                    <textarea id="form-desc" rows="3" placeholder="Provide distinguishing features..." class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 resize-none"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border border-slate-800 text-slate-300 text-xs rounded-xl hover:bg-slate-800">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-600/30">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ITEM DETAILS MODAL -->
+    <div id="details-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-[#0f172a] border border-slate-800 max-w-md w-full p-6 rounded-2xl shadow-2xl space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+                <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                    <i data-lucide="info" class="w-4 h-4 text-indigo-400"></i>
+                    <span>Item Details</span>
+                </h3>
+                <button onclick="closeDetailsModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div id="details-content" class="space-y-3">
+                <!-- Dynamically Populated -->
+            </div>
+
+            <div class="flex justify-end pt-2">
+                <button onclick="closeDetailsModal()" class="px-4 py-2 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl hover:bg-slate-700">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT FRONTEND LOGIC -->
+    <script>
+        let items = [];
+        const defaultHeaders = {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+        };
+
+        // 1. Fetch Items
+        async function fetchItems() {
+            try {
+                const res = await fetch('api.php', {
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
+                items = await res.json();
+                renderDashboard();
+                renderBrowse();
+                renderMatcher();
+            } catch (e) {
+                console.error("API Fetch Error:", e);
+            }
+        }
+        // Tab Switcher
+        function switchTab(tab) {
+            ['dashboard', 'browse', 'matcher'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
+            });
+
+            // Update Sidebar Active Button State
+            ['dashboard', 'browse', 'matcher'].forEach(t => {
+                const btn = document.getElementById(`nav-${t}`);
+                if (t === tab) {
+                    btn.className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white transition-all";
+                } else {
+                    btn.className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all";
+                }
+            });
+        }
+
+        // Render Dashboard Content
+        function renderDashboard() {
+            const activeLost = items.filter(i => i.type === 'lost' && i.status === 'active');
+            const activeFound = items.filter(i => i.type === 'found' && i.status === 'active');
+            const resolved = items.filter(i => i.status === 'resolved');
+
+            document.getElementById('stat-lost').innerText = activeLost.length;
+            document.getElementById('stat-found').innerText = activeFound.length;
+            document.getElementById('stat-resolved').innerText = resolved.length;
+
+            // Render Recent Items
+            const feed = document.getElementById('dashboard-feed');
+            feed.innerHTML = items.slice(0, 6).map(item => renderItemCard(item)).join('');
+            lucide.createIcons();
+        }
+
+        // Render Browse Tab Content
+        function renderBrowse() {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const typeFilter = document.getElementById('filter-type').value;
+
+            const filtered = items.filter(i => {
+                if (typeFilter === 'lost' && (i.type !== 'lost' || i.status === 'resolved')) return false;
+                if (typeFilter === 'found' && (i.type !== 'found' || i.status === 'resolved')) return false;
+                if (typeFilter === 'resolved' && i.status !== 'resolved') return false;
+
+                return (i.title && i.title.toLowerCase().includes(search)) || 
+                       (i.description && i.description.toLowerCase().includes(search)) ||
+                       (i.location && i.location.toLowerCase().includes(search)) ||
+                       (i.reporter_email && i.reporter_email.toLowerCase().includes(search));
+            });
+
+            document.getElementById('browse-feed').innerHTML = filtered.map(item => renderItemCard(item)).join('');
+            lucide.createIcons();
+        }
+
+        // Render Smart Matcher Content
+        function renderMatcher() {
+            const activeLost = items.filter(i => i.type === 'lost' && i.status === 'active');
+            const activeFound = items.filter(i => i.type === 'found' && i.status === 'active');
+            let matches = [];
+
+            activeLost.forEach(lost => {
+                activeFound.forEach(found => {
+                    let score = 0;
+                    if (lost.category === found.category) score += 40;
+                    if (lost.color === found.color) score += 30;
+                    if (lost.location === found.location) score += 30;
+
+                    if (score >= 40) matches.push({ lost, found, score });
+                });
+            });
+
+            document.getElementById('stat-matches').innerText = matches.length;
+            document.getElementById('badge-matcher').innerText = matches.length;
+
+            const banner = document.getElementById('match-banner');
+            if (matches.length > 0) {
+                banner.classList.remove('hidden');
+                document.getElementById('banner-match-count').innerText = `${matches.length} candidate pairs`;
+            } else {
+                banner.classList.add('hidden');
+            }
+
+            const matcherFeed = document.getElementById('matcher-feed');
+            if (matches.length === 0) {
+                matcherFeed.innerHTML = `<div class="bg-[#0f172a] border border-slate-800 p-8 rounded-2xl text-center text-xs text-slate-500">No match candidates detected currently.</div>`;
+                return;
+            }
+
+            matcherFeed.innerHTML = matches.map(m => `
+                <div class="bg-[#0f172a] border border-slate-800 p-4 rounded-2xl space-y-3">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                        <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">${m.score}% MATCH CONFIDENCE</span>
+                        <button onclick="resolvePair(${m.lost.id}, ${m.found.id})" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg shadow-md">Confirm Pair & Resolve</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="bg-[#0b1120] p-3 rounded-xl border border-rose-500/20">
+                            <span class="text-[10px] font-extrabold text-rose-400 uppercase">Lost Item</span>
+                            <h4 class="font-bold text-white text-xs mt-1">${m.lost.title}</h4>
+                            <p class="text-[11px] text-slate-400 mt-0.5">${m.lost.location} • ${m.lost.color}</p>
+                        </div>
+                        <div class="bg-[#0b1120] p-3 rounded-xl border border-emerald-500/20">
+                            <span class="text-[10px] font-extrabold text-emerald-400 uppercase">Found Item</span>
+                            <h4 class="font-bold text-white text-xs mt-1">${m.found.title}</h4>
+                            <p class="text-[11px] text-slate-400 mt-0.5">${m.found.location} • ${m.found.color}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // Item Card Template
+        function renderItemCard(item) {
+            const isLost = item.type === 'lost';
+            const isResolved = item.status === 'resolved';
+
+            return `
+                <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between space-y-3 hover:border-slate-700 transition-all">
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider ${
+                                isResolved ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' :
+                                isLost ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            }">
+                                ${isResolved ? 'Claimed' : item.type.toUpperCase()}
+                            </span>
+                            <span class="text-[11px] text-slate-500 font-medium">${item.date}</span>
+                        </div>
+                        <h4 class="font-bold text-white text-sm mt-2 line-clamp-1">${item.title}</h4>
+                        <p class="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">${item.description || 'No additional details provided.'}</p>
+                        
+                        <div class="flex flex-wrap gap-1.5 mt-3">
+                            <span class="px-2 py-0.5 bg-[#0b1120] text-slate-300 text-[10px] rounded-md border border-slate-800">${item.category}</span>
+                            <span class="px-2 py-0.5 bg-[#0b1120] text-slate-300 text-[10px] rounded-md border border-slate-800">${item.color}</span>
+                            <span class="px-2 py-0.5 bg-[#0b1120] text-slate-300 text-[10px] rounded-md border border-slate-800">${item.location}</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs">
+                        <button onclick="viewDetails(${item.id})" class="text-indigo-400 hover:underline font-semibold text-xs flex items-center space-x-1">
+                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                            <span>Details</span>
+                        </button>
+                        <div class="flex items-center space-x-1.5">
+                            ${!isResolved ? `
+                                <button onclick="markResolved(${item.id})" class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20" title="Mark Claimed">
+                                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                </button>
+                            ` : ''}
+                            <button onclick="deleteRecord(${item.id})" class="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20" title="Delete">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // View Detailed Item Information
+        function viewDetails(id) {
+            const item = items.find(i => i.id == id);
+            if (!item) return;
+
+            const content = document.getElementById('details-content');
+            content.innerHTML = `
+                <div>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${
+                        item.status === 'resolved' ? 'bg-indigo-500/20 text-indigo-300' :
+                        item.type === 'lost' ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'
+                    }">${item.status === 'resolved' ? 'CLAIMED' : item.type.toUpperCase()}</span>
+                    <h2 class="text-base font-bold text-white mt-2">${item.title}</h2>
+                </div>
+
+                <div class="bg-[#0b1120] p-3 rounded-xl border border-slate-800 space-y-1.5 text-xs">
+                    <p class="text-slate-400"><strong class="text-slate-200">Category:</strong> ${item.category}</p>
+                    <p class="text-slate-400"><strong class="text-slate-200">Color:</strong> ${item.color}</p>
+                    <p class="text-slate-400"><strong class="text-slate-200">Location:</strong> ${item.location}</p>
+                    <p class="text-slate-400"><strong class="text-slate-200">Date Logged:</strong> ${item.date}</p>
+                </div>
+
+                <div class="bg-[#0b1120] p-3 rounded-xl border border-slate-800 text-xs">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase">Reporter Contact Information</p>
+                    <p class="text-white font-semibold mt-1">${item.reporter_name || 'Anonymous'}</p>
+                    <p class="text-indigo-400">${item.reporter_email}</p>
+                    <p class="text-slate-400 mt-0.5">${item.reporter_phone || 'N/A'}</p>
+                </div>
+
+                <div class="text-xs text-slate-300 bg-[#0b1120] p-3 rounded-xl border border-slate-800">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase mb-1">Description</p>
+                    <p class="leading-relaxed">${item.description || 'No additional details.'}</p>
+                </div>
+            `;
+
+            document.getElementById('details-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('details-modal').classList.add('hidden');
+        }
+
+        // Open Form Modal
+        function openReportModal(type) {
+            document.getElementById('form-type').value = type;
+            document.getElementById('modal-title').innerText = `Report ${type === 'lost' ? 'Lost' : 'Found'} Item`;
+            document.getElementById('report-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('report-modal').classList.add('hidden');
+        }
+
+        // API Submissions
+        async function submitReport(e) {
+            e.preventDefault();
+            const payload = {
+                type: document.getElementById('form-type').value,
+                title: document.getElementById('form-title').value,
+                category: document.getElementById('form-category').value,
+                color: document.getElementById('form-color').value,
+                location: document.getElementById('form-location').value,
+                date: new Date().toISOString().split('T')[0],
+                reporter_name: document.getElementById('form-name').value,
+                reporter_email: document.getElementById('form-email').value,
+                reporter_phone: document.getElementById('form-phone').value,
+                description: document.getElementById('form-desc').value
+            };
+
+            try {
+                const res = await fetch('api.php', {
+                    method: 'POST',
+                    headers: defaultHeaders,
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    closeModal();
+                    fetchItems();
+                }
+            } catch (err) {
+                console.error("Submission failed:", err);
+            }
+        }
+
+        async function markResolved(id) {
+            await fetch('api.php', {
+                method: 'PUT',
+                headers: defaultHeaders,
+                body: JSON.stringify({ id })
+            });
+            fetchItems();
+        }
+
+        async function resolvePair(id1, id2) {
+            await markResolved(id1);
+            await markResolved(id2);
+        }
+
+        async function deleteRecord(id) {
+            if (!confirm("Are you sure you want to delete this report?")) return;
+            await fetch('api.php', {
+                method: 'DELETE',
+                headers: defaultHeaders,
+                body: JSON.stringify({ id })
+            });
+            fetchItems();
+        }
+
+        // Initialize App
+        fetchItems();
+    </script>
+</body>
+</html>
