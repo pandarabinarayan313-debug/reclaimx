@@ -4,27 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReclaimX - Cloud Belongings Portal</title>
-
+    
     <!-- INLINE SVG FAVICON -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234f46e5' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67 0C7.5 20.5 4 18 4 13V6l8-3 8 3z'/><path d='m9 12 2 2 4-4'/></svg>">
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Ambient Background Movement */
+        @keyframes ambientMove {
+            0% {
+                transform: translate(0px, 0px) scale(1);
+            }
+            33% {
+                transform: translate(80px, -50px) scale(1.15);
+            }
+            66% {
+                transform: translate(-60px, 40px) scale(0.95);
+            }
+            100% {
+                transform: translate(0px, 0px) scale(1);
+            }
+        }
+
+        /* Continuous Radial Mesh Gradient Animation */
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .animate-ambient-1 {
+            animation: ambientMove 18s ease-in-out infinite;
+        }
+
+        .animate-ambient-2 {
+            animation: ambientMove 24s ease-in-out infinite reverse;
+        }
+
+        .animated-bg {
+            background: linear-gradient(-45deg, #0b1120, #0f172a, #1e1b4b, #090d16);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+    </style>
 </head>
-<body class="bg-[#0b1120] text-slate-100 font-sans min-h-screen flex relative overflow-x-hidden">
+<body class="animated-bg text-slate-100 font-sans min-h-screen flex relative overflow-x-hidden">
+
+    <!-- DYNAMIC MOVING AMBIENT GLOW ORBS -->
+    <div class="fixed top-[-10%] right-[-10%] w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[140px] pointer-events-none -z-10 animate-ambient-1"></div>
+    <div class="fixed bottom-[-10%] left-[-10%] w-[550px] h-[550px] bg-purple-900/20 rounded-full blur-[130px] pointer-events-none -z-10 animate-ambient-2"></div>
+    <div class="fixed top-[40%] left-[30%] w-[450px] h-[450px] bg-slate-700/15 rounded-full blur-[120px] pointer-events-none -z-10 animate-ambient-1" style="animation-duration: 30s;"></div>
 
     <!-- STICKY MOBILE TOP BAR (VISIBLE ON MOBILE ONLY) -->
     <header class="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0f172a]/95 backdrop-blur-md border-b border-slate-800 z-30 flex items-center justify-between px-4">
         <!-- Sidebar Toggle Button (Left) -->
-        <button id="sidebar-toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Sidebar" class="p-2 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 transition-all focus:outline-none">
+        <button id="sidebar-toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Sidebar" class="p-2 bg-indigo-600 text-white rounded-xl border border-indigo-400/50 shadow-[0_0_10px_rgba(99,102,241,0.4)] hover:shadow-[0_0_20px_rgba(99,102,241,0.8)] hover:bg-indigo-500 hover:scale-[1.02] transition-all focus:outline-none">
             <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
 
         <!-- Centered Logo Branding (Center) -->
         <div class="flex items-center space-x-2.5 cursor-pointer" onclick="switchTab('dashboard')">
-            <div class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+            <div class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-[0_0_12px_rgba(99,102,241,0.5)] border border-indigo-400/40">
                 <i data-lucide="shield-check" class="w-4 h-4"></i>
             </div>
             <div class="text-left">
@@ -33,7 +83,7 @@
             </div>
         </div>
 
-        <!-- Empty Spacer to keep center alignment accurate -->
+        <!-- Empty Spacer for Alignment -->
         <div class="w-9"></div>
     </header>
 
@@ -41,12 +91,12 @@
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden md:hidden transition-all duration-300"></div>
 
     <!-- LEFT SIDEBAR -->
-    <aside id="sidebar" class="w-64 bg-[#0f172a] border-r border-slate-800 flex flex-col justify-between p-4 min-h-screen shrink-0 fixed inset-y-0 left-0 z-50 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out">
+    <aside id="sidebar" class="w-64 bg-[#0f172a]/90 backdrop-blur-md border-r border-slate-800 flex flex-col justify-between p-4 min-h-screen shrink-0 fixed inset-y-0 left-0 z-50 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out">
         <div class="space-y-6">
             <!-- App Branding + Mobile Close Button -->
             <div class="flex items-center justify-between px-2">
                 <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
-                    <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(99,102,241,0.5)] border border-indigo-400/40">
                         <i data-lucide="shield-check" class="w-5 h-5"></i>
                     </div>
                     <div>
@@ -61,16 +111,16 @@
             </div>
 
             <!-- Navigation Menu -->
-            <nav class="space-y-1">
-                <button id="nav-dashboard" onclick="switchTab('dashboard')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white transition-all">
+            <nav class="space-y-1.5">
+                <button id="nav-dashboard" onclick="switchTab('dashboard')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white border border-indigo-400/60 shadow-[0_0_12px_rgba(99,102,241,0.4)] hover:shadow-[0_0_22px_rgba(99,102,241,0.8)] transition-all">
                     <i data-lucide="layout-grid" class="w-4 h-4"></i>
                     <span>Dashboard</span>
                 </button>
-                <button id="nav-browse" onclick="switchTab('browse')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all">
+                <button id="nav-browse" onclick="switchTab('browse')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 border border-transparent hover:text-white hover:bg-slate-800/60 hover:border-slate-700/60 hover:shadow-[0_0_12px_rgba(148,163,184,0.2)] transition-all">
                     <i data-lucide="search" class="w-4 h-4"></i>
                     <span>Browse Feed</span>
                 </button>
-                <button id="nav-matcher" onclick="switchTab('matcher')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all">
+                <button id="nav-matcher" onclick="switchTab('matcher')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 border border-transparent hover:text-white hover:bg-slate-800/60 hover:border-amber-500/30 hover:shadow-[0_0_12px_rgba(245,158,11,0.25)] transition-all">
                     <div class="flex items-center space-x-3">
                         <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
                         <span>Smart Matcher</span>
@@ -80,13 +130,13 @@
             </nav>
 
             <!-- File Report Actions -->
-            <div class="pt-4 border-t border-slate-800 space-y-2">
+            <div class="pt-4 border-t border-slate-800 space-y-2.5">
                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2">File Report</p>
-                <button onclick="openReportModal('lost')" class="w-full flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all">
+                <button onclick="openReportModal('lost')" class="w-full flex items-center space-x-2 px-3 py-2.5 rounded-xl text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/40 shadow-[0_0_10px_rgba(244,63,94,0.25)] hover:shadow-[0_0_20px_rgba(244,63,94,0.6)] hover:bg-rose-500/20 hover:scale-[1.01] transition-all">
                     <i data-lucide="plus-circle" class="w-4 h-4"></i>
                     <span>Lost Belonging</span>
                 </button>
-                <button onclick="openReportModal('found')" class="w-full flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">
+                <button onclick="openReportModal('found')" class="w-full flex items-center space-x-2 px-3 py-2.5 rounded-xl text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/40 shadow-[0_0_10px_rgba(16,185,129,0.25)] hover:shadow-[0_0_20px_rgba(16,185,129,0.6)] hover:bg-emerald-500/20 hover:scale-[1.01] transition-all">
                     <i data-lucide="plus-circle" class="w-4 h-4"></i>
                     <span>Found Belonging</span>
                 </button>
@@ -105,140 +155,144 @@
                 </span>
             </div>
             <div class="pt-2 border-t border-slate-800/50 text-[10px] text-slate-500 text-center">
-                Developed with ❤️ by <span class="text-indigo-400 font-semibold">Your Name</span>
+                Developed with ❤️ by <span class="text-indigo-400 font-semibold">Team InfernoX</span>
             </div>
         </div>
     </aside>
 
     <!-- MAIN CONTENT AREA -->
-    <main id="main-content" class="flex-1 p-4 sm:p-8 overflow-y-auto max-w-7xl w-full min-w-0 pt-20 md:pt-8 transition-all duration-300">
-        <!-- TAB 1: DASHBOARD VIEW -->
-        <section id="tab-dashboard" class="space-y-6">
-            
-            <!-- Hero Header Banner -->
-            <div class="bg-gradient-to-r from-indigo-950/60 via-slate-900 to-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 relative overflow-hidden">
-                <div class="inline-flex items-center space-x-2 px-3 py-1 bg-indigo-500/20 border border-indigo-500/30 rounded-full text-[10px] font-bold text-indigo-300 uppercase tracking-wider mb-3">
-                    <i data-lucide="refresh-cw" class="w-3 h-3 text-indigo-400"></i>
-                    <span>Realtime Online Sync Connected</span>
+    <main id="main-content" class="flex-1 p-4 sm:p-8 overflow-y-auto max-w-7xl w-full min-w-0 pt-20 md:pt-8 transition-all duration-300 flex flex-col justify-between">
+
+        <!-- TAB CONTENT CONTAINER -->
+        <div>
+            <!-- TAB 1: DASHBOARD VIEW -->
+            <section id="tab-dashboard" class="space-y-6">
+                
+                <!-- Hero Header Banner -->
+                <div class="bg-gradient-to-r from-indigo-950/70 via-slate-900/90 to-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-[0_0_30px_rgba(79,70,229,0.15)]">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 bg-indigo-500/20 border border-indigo-500/40 rounded-full text-[10px] font-bold text-indigo-300 uppercase tracking-wider mb-3">
+                        <i data-lucide="refresh-cw" class="w-3 h-3 text-indigo-400"></i>
+                        <span>Realtime Online Sync Connected</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Reclaim Misplaced Campus Property</h2>
+                    <p class="text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl">
+                        Submit lost property or report recovered items. Reports automatically sync across all online users in real-time.
+                    </p>
+                    <div class="mt-5 flex items-center space-x-3">
+                        <button onclick="openReportModal('lost')" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold border border-rose-400/50 shadow-[0_0_12px_rgba(225,29,72,0.4)] hover:shadow-[0_0_24px_rgba(225,29,72,0.8)] hover:scale-[1.02] transition-all flex items-center space-x-1.5">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span>Report Lost Item</span>
+                        </button>
+                        <button onclick="openReportModal('found')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold border border-emerald-400/50 shadow-[0_0_12px_rgba(16,185,129,0.4)] hover:shadow-[0_0_24px_rgba(16,185,129,0.8)] hover:scale-[1.02] transition-all flex items-center space-x-1.5">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span>Report Found Item</span>
+                        </button>
+                    </div>
                 </div>
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Reclaim Misplaced Campus Property</h2>
-                <p class="text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl">
-                    Submit lost property or report recovered items. Reports automatically sync across all online users in real-time.
-                </p>
-                <div class="mt-5 flex items-center space-x-3">
-                    <button onclick="openReportModal('lost')" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all flex items-center space-x-1.5 shadow-lg shadow-rose-600/20">
-                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                        <span>Report Lost Item</span>
+
+                <!-- Dashboard Statistics Matrix -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-[#0f172a]/80 border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Lost</p>
+                            <h3 id="stat-lost" class="text-2xl font-bold text-white mt-2">0</h3>
+                            <p class="text-[11px] text-slate-500 mt-1">Missing belongings</p>
+                        </div>
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-400"></i>
+                    </div>
+
+                    <div class="bg-[#0f172a]/80 border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Found</p>
+                            <h3 id="stat-found" class="text-2xl font-bold text-white mt-2">0</h3>
+                            <p class="text-[11px] text-slate-500 mt-1">Safely turned in</p>
+                        </div>
+                        <i data-lucide="package" class="w-5 h-5 text-emerald-400"></i>
+                    </div>
+
+                    <div class="bg-[#0f172a]/80 border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Matches</p>
+                            <h3 id="stat-matches" class="text-2xl font-bold text-amber-300 mt-2">0</h3>
+                            <p class="text-[11px] text-slate-500 mt-1">High confidence</p>
+                        </div>
+                        <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i>
+                    </div>
+
+                    <div class="bg-[#0f172a]/80 border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Claimed</p>
+                            <h3 id="stat-resolved" class="text-2xl font-bold text-white mt-2">0</h3>
+                            <p class="text-[11px] text-slate-500 mt-1">Reunited online</p>
+                        </div>
+                        <i data-lucide="heart-handshake" class="w-5 h-5 text-indigo-400"></i>
+                    </div>
+                </div>
+
+                <!-- Smart Cross-Match Highlight Alert Banner -->
+                <div id="match-banner" class="hidden bg-slate-900/90 border border-amber-500/40 rounded-2xl p-4 flex items-center justify-between shadow-[0_0_20px_rgba(245,158,11,0.15)]">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 bg-amber-500/20 text-amber-300 rounded-xl border border-amber-500/30">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-sm">Smart Cross-Match Detected!</h4>
+                            <p class="text-xs text-slate-400">Found <span id="banner-match-count" class="text-amber-300 font-bold">0 candidate pairs</span> with high attribute similarity.</p>
+                        </div>
+                    </div>
+                    <button onclick="switchTab('matcher')" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl border border-amber-300/60 shadow-[0_0_12px_rgba(245,158,11,0.5)] hover:shadow-[0_0_22px_rgba(245,158,11,0.9)] hover:scale-[1.02] transition-all flex items-center space-x-1">
+                        <span>Review Candidates</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </button>
-                    <button onclick="openReportModal('found')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex items-center space-x-1.5 shadow-lg shadow-emerald-600/20">
-                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                        <span>Report Found Item</span>
+                </div>
+
+                <!-- Recent Submissions Header -->
+                <div class="flex items-center justify-between pt-2">
+                    <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                        <i data-lucide="clock" class="w-4 h-4 text-indigo-400"></i>
+                        <span>Realtime Live Submissions</span>
+                    </h3>
+                    <button onclick="switchTab('browse')" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center space-x-1">
+                        <span>View All</span>
+                        <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
                     </button>
                 </div>
-            </div>
 
-            <!-- Dashboard Statistics Matrix -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Lost</p>
-                        <h3 id="stat-lost" class="text-2xl font-bold text-white mt-2">0</h3>
-                        <p class="text-[11px] text-slate-500 mt-1">Missing belongings</p>
+                <!-- Items Feed Grid -->
+                <div id="dashboard-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </section>
+
+            <!-- TAB 2: BROWSE FEED VIEW -->
+            <section id="tab-browse" class="hidden space-y-6">
+                <div class="bg-[#0f172a]/90 border border-slate-800 p-4 rounded-2xl flex flex-col md:flex-row gap-3 justify-between">
+                    <div class="relative flex-1 flex items-center">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                        <input id="search-input" oninput="renderBrowse()" type="text" placeholder="Search title, keywords, location..." class="w-full bg-[#0b1120] border border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
                     </div>
-                    <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-400"></i>
+                    <select id="filter-type" onchange="renderBrowse()" class="bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        <option value="all">All Submissions</option>
+                        <option value="lost">Lost Only</option>
+                        <option value="found">Found Only</option>
+                        <option value="resolved">Claimed / Resolved</option>
+                    </select>
                 </div>
+                <div id="browse-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </section>
 
-                <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Found</p>
-                        <h3 id="stat-found" class="text-2xl font-bold text-white mt-2">0</h3>
-                        <p class="text-[11px] text-slate-500 mt-1">Safely turned in</p>
-                    </div>
-                    <i data-lucide="package" class="w-5 h-5 text-emerald-400"></i>
-                </div>
-
-                <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Matches</p>
-                        <h3 id="stat-matches" class="text-2xl font-bold text-amber-300 mt-2">0</h3>
-                        <p class="text-[11px] text-slate-500 mt-1">High confidence</p>
-                    </div>
-                    <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i>
-                </div>
-
-                <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Claimed</p>
-                        <h3 id="stat-resolved" class="text-2xl font-bold text-white mt-2">0</h3>
-                        <p class="text-[11px] text-slate-500 mt-1">Reunited online</p>
-                    </div>
-                    <i data-lucide="heart-handshake" class="w-5 h-5 text-indigo-400"></i>
-                </div>
-            </div>
-
-            <!-- Smart Cross-Match Highlight Alert Banner -->
-            <div id="match-banner" class="hidden bg-slate-900 border border-amber-500/30 rounded-2xl p-4 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="p-2.5 bg-amber-500/20 text-amber-300 rounded-xl border border-amber-500/30">
-                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+            <!-- TAB 3: SMART MATCHER VIEW -->
+            <section id="tab-matcher" class="hidden space-y-6">
+                <div class="bg-[#0f172a]/90 border border-amber-500/30 p-6 rounded-2xl flex items-center space-x-4">
+                    <div class="p-3 bg-amber-500/20 text-amber-300 rounded-xl border border-amber-500/30">
+                        <i data-lucide="sparkles" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h4 class="font-bold text-white text-sm">Smart Cross-Match Detected!</h4>
-                        <p class="text-xs text-slate-400">Found <span id="banner-match-count" class="text-amber-300 font-bold">0 candidate pairs</span> with high attribute similarity.</p>
+                        <h3 class="text-base font-bold text-white">Smart Attribute Cross-Matcher</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Automated similarity comparison across Item Type (40%), Color (30%), and Location (30%).</p>
                     </div>
                 </div>
-                <button onclick="switchTab('matcher')" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl flex items-center space-x-1">
-                    <span>Review Candidates</span>
-                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </button>
-            </div>
-
-            <!-- Recent Submissions Header -->
-            <div class="flex items-center justify-between pt-2">
-                <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-                    <i data-lucide="clock" class="w-4 h-4 text-indigo-400"></i>
-                    <span>Realtime Live Submissions</span>
-                </h3>
-                <button onclick="switchTab('browse')" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center space-x-1">
-                    <span>View All</span>
-                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                </button>
-            </div>
-
-            <!-- Items Feed Grid -->
-            <div id="dashboard-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-        </section>
-
-        <!-- TAB 2: BROWSE FEED VIEW -->
-        <section id="tab-browse" class="hidden space-y-6">
-            <div class="bg-[#0f172a] border border-slate-800 p-4 rounded-2xl flex flex-col md:flex-row gap-3 justify-between">
-                <div class="relative flex-1">
-                    <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-3"></i>
-                    <input id="search-input" oninput="renderBrowse()" type="text" placeholder="Search title, keywords, location..." class="w-full bg-[#0b1120] border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
-                </div>
-                <select id="filter-type" onchange="renderBrowse()" class="bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                    <option value="all">All Submissions</option>
-                    <option value="lost">Lost Only</option>
-                    <option value="found">Found Only</option>
-                    <option value="resolved">Claimed / Resolved</option>
-                </select>
-            </div>
-            <div id="browse-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-        </section>
-
-        <!-- TAB 3: SMART MATCHER VIEW -->
-        <section id="tab-matcher" class="hidden space-y-6">
-            <div class="bg-[#0f172a] border border-amber-500/30 p-6 rounded-2xl flex items-center space-x-4">
-                <div class="p-3 bg-amber-500/20 text-amber-300 rounded-xl border border-amber-500/30">
-                    <i data-lucide="sparkles" class="w-6 h-6"></i>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-white">Smart Attribute Cross-Matcher</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Automated similarity comparison across Category (40%), Color (30%), and Location (30%).</p>
-                </div>
-            </div>
-            <div id="matcher-feed" class="space-y-4"></div>
-        </section>
+                <div id="matcher-feed" class="space-y-4"></div>
+            </section>
+        </div>
 
         <!-- FOOTER CREDITS -->
         <footer class="mt-12 pt-6 border-t border-slate-800/60 text-center text-xs text-slate-500">
@@ -263,24 +317,52 @@
                     <input type="text" id="form-title" required placeholder="e.g. Scientific Calculator Casio FX-991EX" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
                 </div>
 
-                <div class="grid grid-cols-3 gap-2">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <!-- Item -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Category</label>
-                        <select id="form-category" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-xs text-white">
-                            <option>Calculator</option><option>ID Card</option><option>Water Bottle</option><option>Electronics</option><option>Notebook</option>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Item *</label>
+                        <select id="form-item" required onchange="handleOtherToggle('item')" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            <option value="" disabled selected>--SELECT--</option>
+                            <option value="Calculator">Calculator</option>
+                            <option value="ID Card">ID Card</option>
+                            <option value="Water Bottle">Water Bottle</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Notebook">Notebook</option>
+                            <option value="OTHER">-- OTHER --</option>
                         </select>
+                        <!-- Custom Item Input -->
+                        <input type="text" id="form-item-other" placeholder="Enter Item..." class="hidden mt-2 w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
                     </div>
+
+                    <!-- Color -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Color</label>
-                        <select id="form-color" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-xs text-white">
-                            <option>Black</option><option>Blue</option><option>Silver/Grey</option><option>Red</option><option>White</option>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Color *</label>
+                        <select id="form-color" required onchange="handleOtherToggle('color')" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            <option value="" disabled selected>--SELECT--</option>
+                            <option value="Black">Black</option>
+                            <option value="Blue">Blue</option>
+                            <option value="Silver/Grey">Silver/Grey</option>
+                            <option value="Red">Red</option>
+                            <option value="White">White</option>
+                            <option value="OTHER">-- OTHER --</option>
                         </select>
+                        <!-- Custom Color Input -->
+                        <input type="text" id="form-color-other" placeholder="Enter Color..." class="hidden mt-2 w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
                     </div>
+
+                    <!-- Location -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Location</label>
-                        <select id="form-location" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-xs text-white">
-                            <option>Library</option><option>Canteen</option><option>Ground Floor Lab</option><option>Seminar Hall</option>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Location *</label>
+                        <select id="form-location" required onchange="handleOtherToggle('location')" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            <option value="" disabled selected>--SELECT--</option>
+                            <option value="Library">Library</option>
+                            <option value="Canteen">Canteen</option>
+                            <option value="Ground Floor Lab">Ground Floor Lab</option>
+                            <option value="Seminar Hall">Seminar Hall</option>
+                            <option value="OTHER">-- OTHER --</option>
                         </select>
+                        <!-- Custom Location Input -->
+                        <input type="text" id="form-location-other" placeholder="Enter Location..." class="hidden mt-2 w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
                     </div>
                 </div>
 
@@ -291,7 +373,7 @@
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Phone Number</label>
-                        <input type="text" id="form-phone" placeholder="+1 (555) 000-0000" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                        <input type="tel" id="form-phone" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="5550000000" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
                     </div>
                 </div>
 
@@ -301,15 +383,36 @@
                 </div>
 
                 <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Item Image (Optional)</label>
+                    <input type="file" id="form-image" accept="image/*" class="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer">
+                </div>
+
+                <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Description</label>
                     <textarea id="form-desc" rows="3" placeholder="Provide distinguishing features..." class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 resize-none"></textarea>
                 </div>
 
                 <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 border border-slate-800 text-slate-300 text-xs rounded-xl hover:bg-slate-800">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-600/30">Submit Report</button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border border-slate-700 text-slate-300 text-xs rounded-xl hover:bg-slate-800 hover:border-slate-600 transition-all">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl border border-indigo-400/50 shadow-[0_0_12px_rgba(99,102,241,0.4)] hover:shadow-[0_0_22px_rgba(99,102,241,0.8)] hover:scale-[1.02] transition-all">Submit Report</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- SUCCESS NOTIFICATION MODAL -->
+    <div id="success-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-[#0f172a] border border-emerald-500/40 max-w-xs w-full p-6 rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.25)] text-center space-y-4">
+            <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.5)] flex items-center justify-center mx-auto">
+                <i data-lucide="check-circle" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-white">Reported successfully</h3>
+                <p class="text-xs text-slate-400 mt-1">Your submission has been synced to the portal.</p>
+            </div>
+            <button onclick="closeSuccessModal()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl border border-indigo-400/50 shadow-[0_0_12px_rgba(99,102,241,0.4)] hover:shadow-[0_0_22px_rgba(99,102,241,0.8)] hover:scale-[1.02] transition-all">
+                Continue
+            </button>
         </div>
     </div>
 
@@ -329,7 +432,7 @@
             </div>
 
             <div class="flex justify-end pt-2">
-                <button onclick="closeDetailsModal()" class="px-4 py-2 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl hover:bg-slate-700">Close</button>
+                <button onclick="closeDetailsModal()" class="px-4 py-2 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl hover:bg-slate-700 hover:border-slate-600 transition-all">Close</button>
             </div>
         </div>
     </div>
@@ -338,7 +441,6 @@
     <script>
         let items = [];
         const defaultHeaders = {
-            'Content-Type': 'application/json',
             'ngrok-skip-browser-warning': 'true'
         };
 
@@ -346,24 +448,32 @@
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
-            const toggleBtn = document.getElementById('sidebar-toggle-btn');
-
             const isCollapsed = sidebar.classList.toggle('-translate-x-full');
             
-            // Show/hide backdrop overlay
             overlay.classList.toggle('hidden', isCollapsed);
-            
-            // Hide the floating button while sidebar is open so it never overlaps the logo
-            toggleBtn.classList.toggle('hidden', !isCollapsed);
-
             lucide.createIcons();
         }
+
+        // Dynamic 'OTHER' Input Toggle Handler
+        function handleOtherToggle(field) {
+            const selectEl = document.getElementById(`form-${field}`);
+            const otherInput = document.getElementById(`form-${field}-other`);
+            
+            if (selectEl.value === 'OTHER') {
+                otherInput.classList.remove('hidden');
+                otherInput.required = true;
+                otherInput.focus();
+            } else {
+                otherInput.classList.add('hidden');
+                otherInput.required = false;
+                otherInput.value = '';
+            }
+        }
+
         // 1. Fetch Items
         async function fetchItems() {
             try {
-                const res = await fetch('api.php', {
-                    headers: { 'ngrok-skip-browser-warning': 'true' }
-                });
+                const res = await fetch('api.php', { headers: defaultHeaders });
                 items = await res.json();
                 renderDashboard();
                 renderBrowse();
@@ -372,6 +482,7 @@
                 console.error("API Fetch Error:", e);
             }
         }
+
         // Tab Switcher
         function switchTab(tab) {
             ['dashboard', 'browse', 'matcher'].forEach(t => {
@@ -382,9 +493,9 @@
             ['dashboard', 'browse', 'matcher'].forEach(t => {
                 const btn = document.getElementById(`nav-${t}`);
                 if (t === tab) {
-                    btn.className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white transition-all";
+                    btn.className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white border border-indigo-400/60 shadow-[0_0_12px_rgba(99,102,241,0.4)] hover:shadow-[0_0_22px_rgba(99,102,241,0.8)] transition-all";
                 } else {
-                    btn.className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all";
+                    btn.className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 border border-transparent hover:text-white hover:bg-slate-800/60 hover:border-slate-700/60 hover:shadow-[0_0_12px_rgba(148,163,184,0.2)] transition-all";
                 }
             });
 
@@ -423,7 +534,10 @@
                 if (typeFilter === 'found' && (i.type !== 'found' || i.status === 'resolved')) return false;
                 if (typeFilter === 'resolved' && i.status !== 'resolved') return false;
 
+                const itemType = i.item || i.category || '';
+
                 return (i.title && i.title.toLowerCase().includes(search)) || 
+                       (itemType && itemType.toLowerCase().includes(search)) ||
                        (i.description && i.description.toLowerCase().includes(search)) ||
                        (i.location && i.location.toLowerCase().includes(search)) ||
                        (i.reporter_email && i.reporter_email.toLowerCase().includes(search));
@@ -442,7 +556,10 @@
             activeLost.forEach(lost => {
                 activeFound.forEach(found => {
                     let score = 0;
-                    if (lost.category === found.category) score += 40;
+                    const lostItem = lost.item || lost.category;
+                    const foundItem = found.item || found.category;
+
+                    if (lostItem === foundItem) score += 40;
                     if (lost.color === found.color) score += 30;
                     if (lost.location === found.location) score += 30;
 
@@ -463,15 +580,15 @@
 
             const matcherFeed = document.getElementById('matcher-feed');
             if (matches.length === 0) {
-                matcherFeed.innerHTML = `<div class="bg-[#0f172a] border border-slate-800 p-8 rounded-2xl text-center text-xs text-slate-500">No match candidates detected currently.</div>`;
+                matcherFeed.innerHTML = `<div class="bg-[#0f172a]/90 border border-slate-800 p-8 rounded-2xl text-center text-xs text-slate-500">No match candidates detected currently.</div>`;
                 return;
             }
 
             matcherFeed.innerHTML = matches.map(m => `
-                <div class="bg-[#0f172a] border border-slate-800 p-4 rounded-2xl space-y-3">
+                <div class="bg-[#0f172a]/90 border border-slate-800 p-4 rounded-2xl space-y-3">
                     <div class="flex items-center justify-between pb-2 border-b border-slate-800">
                         <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">${m.score}% MATCH CONFIDENCE</span>
-                        <button onclick="resolvePair(${m.lost.id}, ${m.found.id})" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg shadow-md">Confirm Pair & Resolve</button>
+                        <button onclick="resolvePair(${m.lost.id}, ${m.found.id})" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg border border-indigo-400/50 shadow-[0_0_10px_rgba(99,102,241,0.4)] hover:shadow-[0_0_18px_rgba(99,102,241,0.8)] transition-all">Confirm Pair & Resolve</button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div class="bg-[#0b1120] p-3 rounded-xl border border-rose-500/20">
@@ -494,10 +611,16 @@
         function renderItemCard(item) {
             const isLost = item.type === 'lost';
             const isResolved = item.status === 'resolved';
+            const itemType = item.item || item.category || 'N/A';
 
             return `
-                <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between space-y-3 hover:border-slate-700 transition-all">
+                <div class="bg-[#0f172a]/90 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between space-y-3 hover:border-slate-700 hover:shadow-[0_0_20px_rgba(15,23,42,0.8)] transition-all">
                     <div>
+                        ${item.image_url ? `
+                            <div class="w-full h-36 rounded-xl overflow-hidden mb-3 border border-slate-800">
+                                <img src="${item.image_url}" alt="${item.title}" class="w-full h-full object-cover">
+                            </div>
+                        ` : ''}
                         <div class="flex items-center justify-between">
                             <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider ${
                                 isResolved ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' :
@@ -511,24 +634,24 @@
                         <p class="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">${item.description || 'No additional details provided.'}</p>
                         
                         <div class="flex flex-wrap gap-1.5 mt-3">
-                            <span class="px-2 py-0.5 bg-[#0b1120] text-slate-300 text-[10px] rounded-md border border-slate-800">${item.category}</span>
+                            <span class="px-2 py-0.5 bg-[#0b1120] text-slate-300 text-[10px] rounded-md border border-slate-800">${itemType}</span>
                             <span class="px-2 py-0.5 bg-[#0b1120] text-slate-300 text-[10px] rounded-md border border-slate-800">${item.color}</span>
                             <span class="px-2 py-0.5 bg-[#0b1120] text-slate-300 text-[10px] rounded-md border border-slate-800">${item.location}</span>
                         </div>
                     </div>
 
                     <div class="pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs">
-                        <button onclick="viewDetails(${item.id})" class="text-indigo-400 hover:underline font-semibold text-xs flex items-center space-x-1">
+                        <button onclick="viewDetails(${item.id})" class="text-indigo-400 hover:text-indigo-300 font-semibold text-xs flex items-center space-x-1">
                             <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                             <span>Details</span>
                         </button>
                         <div class="flex items-center space-x-1.5">
                             ${!isResolved ? `
-                                <button onclick="markResolved(${item.id})" class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20" title="Mark Claimed">
+                                <button onclick="markResolved(${item.id})" class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.2)] hover:shadow-[0_0_15px_rgba(16,185,129,0.6)] transition-all" title="Mark Claimed">
                                     <i data-lucide="check" class="w-3.5 h-3.5"></i>
                                 </button>
                             ` : ''}
-                            <button onclick="deleteRecord(${item.id})" class="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20" title="Delete">
+                            <button onclick="deleteRecord(${item.id})" class="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/40 shadow-[0_0_8px_rgba(244,63,94,0.2)] hover:shadow-[0_0_15px_rgba(244,63,94,0.6)] transition-all" title="Delete">
                                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                             </button>
                         </div>
@@ -542,8 +665,15 @@
             const item = items.find(i => i.id == id);
             if (!item) return;
 
+            const itemType = item.item || item.category || 'N/A';
             const content = document.getElementById('details-content');
             content.innerHTML = `
+                ${item.image_url ? `
+                    <div class="w-full h-48 rounded-xl overflow-hidden border border-slate-800 mb-3">
+                        <img src="${item.image_url}" alt="${item.title}" class="w-full h-full object-cover">
+                    </div>
+                ` : ''}
+
                 <div>
                     <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${
                         item.status === 'resolved' ? 'bg-indigo-500/20 text-indigo-300' :
@@ -553,7 +683,7 @@
                 </div>
 
                 <div class="bg-[#0b1120] p-3 rounded-xl border border-slate-800 space-y-1.5 text-xs">
-                    <p class="text-slate-400"><strong class="text-slate-200">Category:</strong> ${item.category}</p>
+                    <p class="text-slate-400"><strong class="text-slate-200">Item:</strong> ${itemType}</p>
                     <p class="text-slate-400"><strong class="text-slate-200">Color:</strong> ${item.color}</p>
                     <p class="text-slate-400"><strong class="text-slate-200">Location:</strong> ${item.location}</p>
                     <p class="text-slate-400"><strong class="text-slate-200">Date Logged:</strong> ${item.date}</p>
@@ -586,7 +716,6 @@
             document.getElementById('modal-title').innerText = `Report ${type === 'lost' ? 'Lost' : 'Found'} Item`;
             document.getElementById('report-modal').classList.remove('hidden');
 
-            // Close sidebar if opened on mobile when filing report
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebar');
                 if (!sidebar.classList.contains('-translate-x-full')) {
@@ -595,36 +724,73 @@
             }
         }
 
+        // Close Form Modal & Reset Dropdowns
         function closeModal() {
             document.getElementById('report-modal').classList.add('hidden');
+            ['item', 'color', 'location'].forEach(field => {
+                const selectEl = document.getElementById(`form-${field}`);
+                const otherInput = document.getElementById(`form-${field}-other`);
+                if (selectEl) selectEl.selectedIndex = 0;
+                if (otherInput) {
+                    otherInput.classList.add('hidden');
+                    otherInput.required = false;
+                    otherInput.value = '';
+                }
+            });
+            const imageInput = document.getElementById('form-image');
+            if (imageInput) imageInput.value = '';
         }
 
-        // API Submissions
+        // Show and Close Success Notification Modal
+        function showSuccessModal() {
+            document.getElementById('success-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('success-modal').classList.add('hidden');
+        }
+
+        // API Submissions with Image File Upload & FormData
         async function submitReport(e) {
             e.preventDefault();
-            const payload = {
-                type: document.getElementById('form-type').value,
-                title: document.getElementById('form-title').value,
-                category: document.getElementById('form-category').value,
-                color: document.getElementById('form-color').value,
-                location: document.getElementById('form-location').value,
-                date: new Date().toISOString().split('T')[0],
-                reporter_name: document.getElementById('form-name').value,
-                reporter_email: document.getElementById('form-email').value,
-                reporter_phone: document.getElementById('form-phone').value,
-                description: document.getElementById('form-desc').value
+
+            const getFieldValue = (field) => {
+                const selectVal = document.getElementById(`form-${field}`).value;
+                if (selectVal === 'OTHER') {
+                    return document.getElementById(`form-${field}-other`).value.trim();
+                }
+                return selectVal;
             };
+
+            const formData = new FormData();
+            formData.append('type', document.getElementById('form-type').value);
+            formData.append('title', document.getElementById('form-title').value);
+            formData.append('item', getFieldValue('item'));
+            formData.append('color', getFieldValue('color'));
+            formData.append('location', getFieldValue('location'));
+            formData.append('date', new Date().toISOString().split('T')[0]);
+            formData.append('reporter_name', document.getElementById('form-name').value);
+            formData.append('reporter_email', document.getElementById('form-email').value);
+            formData.append('reporter_phone', document.getElementById('form-phone').value);
+            formData.append('description', document.getElementById('form-desc').value);
+
+            const fileInput = document.getElementById('form-image');
+            if (fileInput && fileInput.files.length > 0) {
+                formData.append('image', fileInput.files[0]);
+            }
 
             try {
                 const res = await fetch('api.php', {
                     method: 'POST',
                     headers: defaultHeaders,
-                    body: JSON.stringify(payload)
+                    body: formData
                 });
 
                 if (res.ok) {
                     closeModal();
                     fetchItems();
+                    showSuccessModal();
                 }
             } catch (err) {
                 console.error("Submission failed:", err);
@@ -634,7 +800,7 @@
         async function markResolved(id) {
             await fetch('api.php', {
                 method: 'PUT',
-                headers: defaultHeaders,
+                headers: { ...defaultHeaders, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id })
             });
             fetchItems();
@@ -649,7 +815,7 @@
             if (!confirm("Are you sure you want to delete this report?")) return;
             await fetch('api.php', {
                 method: 'DELETE',
-                headers: defaultHeaders,
+                headers: { ...defaultHeaders, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id })
             });
             fetchItems();

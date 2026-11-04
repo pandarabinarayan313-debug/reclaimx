@@ -1,20 +1,20 @@
 <?php
-header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, ngrok-skip-browser-warning");
+header("Content-Type: application/json");
 
-// Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-$host = "sql108.infinityfree.com"; // MySQL Server from phpMyAdmin header
-$user = "if0_43327913";            // Your InfinityFree Username
-$pass = "YOUR_VPANEL_PASSWORD";     // Your account password
-$dbname = "if0_43327913_reclaimx_db"; // Database Name from header
-$conn = new mysqli($host, $user, $pass, $dbname);
+// Local XAMPP MySQL Settings
+$host   = "localhost";
+$user   = "root";      // Default XAMPP username
+$pass   = "";          // Default XAMPP password (leave blank)
+$dbname = "reclaimx_db";
+$conn   = new mysqli($host, $user, $pass, $dbname);
 
 if ($conn->connect_error) {
     http_response_code(500);
@@ -22,7 +22,6 @@ if ($conn->connect_error) {
     exit();
 }
 
-// ... (keep the rest of your api.php code unchanged)
 $method = $_SERVER['REQUEST_METHOD'];
 
 // GET: Fetch all items
@@ -36,9 +35,12 @@ if ($method === 'GET') {
     exit();
 }
 
-// POST: Add new item using Prepared Statements
+// POST: Add new item (supports multipart/form-data with image upload)
 if ($method === 'POST') {
-    $data = json_decode(file_get_contents("php://input"), true);
+    $data = $_POST;
+    if (empty($data)) {
+        $data = json_decode(file_get_contents("php://input"), true) ?? [];
+    }
     
     if (empty($data['title']) || empty($data['reporter_email'])) {
         http_response_code(400);
@@ -48,7 +50,7 @@ if ($method === 'POST') {
 
     $type = $data['type'] ?? 'lost';
     $title = $data['title'];
-    $category = $data['category'] ?? 'General';
+    $item = !empty($data['item']) ? $data['item'] : ($data['category'] ?? 'General');
     $color = $data['color'] ?? 'N/A';
     $location = $data['location'] ?? 'Unknown';
     $date = $data['date'] ?? date('Y-m-d');
@@ -56,10 +58,32 @@ if ($method === 'POST') {
     $reporter_email = $data['reporter_email'];
     $reporter_phone = !empty($data['reporter_phone']) ? $data['reporter_phone'] : 'N/A';
     $description = $data['description'] ?? '';
-    $image_url = $data['image_url'] ?? '';
+    $image_url = '';
 
-    $stmt = $conn->prepare("INSERT INTO items (type, title, category, color, location, date, reporter_name, reporter_email, reporter_phone, description, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssssssss", $type, $title, $category, $color, $location, $date, $reporter_name, $reporter_email, $reporter_phone, $description, $image_url);
+    // Handle File Upload
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = 'uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $fileTmpPath = $_FILES['image']['tmp_name'];
+        $fileName = $_FILES['image']['name'];
+        $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+        if (in_array($fileExtension, $allowedExtensions)) {
+            $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
+            $destPath = $uploadDir . $newFileName;
+
+            if (move_uploaded_file($fileTmpPath, $destPath)) {
+                $image_url = $destPath;
+            }
+        }
+    }
+
+    $stmt = $conn->prepare("INSERT INTO items (type, title, item, color, location, date, reporter_name, reporter_email, reporter_phone, description, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssssssss", $type, $title, $item, $color, $location, $date, $reporter_name, $reporter_email, $reporter_phone, $description, $image_url);
 
     if ($stmt->execute()) {
         echo json_encode(["success" => true, "id" => $stmt->insert_id]);
@@ -89,10 +113,20 @@ if ($method === 'PUT') {
     exit();
 }
 
-// DELETE: Delete record
+// DELETE: Delete record and attached file
 if ($method === 'DELETE') {
     $data = json_decode(file_get_contents("php://input"), true);
     $id = intval($data['id']);
+
+    // Check for existing image file and remove it
+    $stmtSelect = $conn->prepare("SELECT image_url FROM items WHERE id = ?");
+    $stmtSelect->bind_param("i", $id);
+    $stmtSelect->execute();
+    $res = $stmtSelect->get_result()->fetch_assoc();
+    if ($res && !empty($res['image_url']) && file_exists($res['image_url'])) {
+        unlink($res['image_url']);
+    }
+    $stmtSelect->close();
 
     $stmt = $conn->prepare("DELETE FROM items WHERE id = ?");
     $stmt->bind_param("i", $id);
