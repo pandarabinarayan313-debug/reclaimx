@@ -56,6 +56,13 @@
             background-size: 400% 400%;
             animation: gradientShift 15s ease infinite;
         }
+
+        /* Drag and Drop Hover Highlight */
+        .dropzone-active {
+            border-color: #6366f1 !important;
+            background-color: rgba(99, 102, 241, 0.15) !important;
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.4) !important;
+        }
     </style>
 </head>
 <body class="animated-bg text-slate-100 font-sans min-h-screen flex relative overflow-x-hidden">
@@ -382,9 +389,23 @@
                     <input type="email" id="form-email" required placeholder="alex.r@college.edu" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
                 </div>
 
+                <!-- DRAG & DROP FILE UPLOAD AREA -->
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Item Image (Optional)</label>
-                    <input type="file" id="form-image" accept="image/*" class="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer">
+                    <div id="dropzone" onclick="document.getElementById('form-image').click()" class="w-full border-2 border-dashed border-slate-700/80 hover:border-indigo-500/80 bg-[#0b1120]/60 hover:bg-slate-900/60 rounded-xl p-4 text-center cursor-pointer transition-all duration-300 shadow-[0_0_15px_rgba(99,102,241,0.1)] hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]">
+                        <input type="file" id="form-image" accept="image/*" class="hidden" onchange="handleFileSelect(this.files)">
+                        <div id="dropzone-prompt" class="space-y-1">
+                            <i data-lucide="upload-cloud" class="w-6 h-6 text-indigo-400 mx-auto"></i>
+                            <p class="text-xs font-semibold text-slate-300">Click to browse or drag & drop photo here</p>
+                            <p class="text-[10px] text-slate-500">Supports JPG, PNG, WEBP, GIF</p>
+                        </div>
+                        <div id="dropzone-preview" class="hidden items-center justify-between bg-indigo-950/40 border border-indigo-500/30 px-3 py-2 rounded-xl text-xs text-indigo-300">
+                            <span id="preview-filename" class="truncate font-semibold max-w-[200px]">filename.jpg</span>
+                            <button type="button" onclick="event.stopPropagation(); removeSelectedFile();" class="text-slate-400 hover:text-rose-400 p-1">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -437,12 +458,180 @@
         </div>
     </div>
 
+    <!-- FULL IMAGE LIGHTBOX MODAL WITH ZOOM, ROTATE & SCROLL -->
+    <div id="image-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden flex flex-col items-center justify-center p-4 z-50 select-none" onclick="closeImageModal()">
+        
+        <!-- Top Toolbar Controls with Glow Shadows -->
+        <div class="absolute top-4 right-4 flex items-center space-x-2 z-10" onclick="event.stopPropagation()">
+            <button onclick="zoomImage(0.2)" class="p-2.5 bg-slate-900/90 hover:bg-indigo-600 text-slate-300 hover:text-white rounded-xl border border-slate-700/80 shadow-[0_0_12px_rgba(99,102,241,0.3)] hover:shadow-[0_0_22px_rgba(99,102,241,0.8)] hover:scale-[1.05] transition-all" title="Zoom In (+)">
+                <i data-lucide="zoom-in" class="w-5 h-5"></i>
+            </button>
+            <button onclick="zoomImage(-0.2)" class="p-2.5 bg-slate-900/90 hover:bg-indigo-600 text-slate-300 hover:text-white rounded-xl border border-slate-700/80 shadow-[0_0_12px_rgba(99,102,241,0.3)] hover:shadow-[0_0_22px_rgba(99,102,241,0.8)] hover:scale-[1.05] transition-all" title="Zoom Out (-)">
+                <i data-lucide="zoom-out" class="w-5 h-5"></i>
+            </button>
+            <button onclick="rotateImage(90)" class="p-2.5 bg-slate-900/90 hover:bg-indigo-600 text-slate-300 hover:text-white rounded-xl border border-slate-700/80 shadow-[0_0_12px_rgba(99,102,241,0.3)] hover:shadow-[0_0_22px_rgba(99,102,241,0.8)] hover:scale-[1.05] transition-all" title="Rotate (R)">
+                <i data-lucide="rotate-cw" class="w-5 h-5"></i>
+            </button>
+            <button onclick="resetImageTransform()" class="p-2.5 bg-slate-900/90 hover:bg-indigo-600 text-slate-300 hover:text-white rounded-xl border border-slate-700/80 shadow-[0_0_12px_rgba(99,102,241,0.3)] hover:shadow-[0_0_22px_rgba(99,102,241,0.8)] hover:scale-[1.05] transition-all" title="Reset View (0)">
+                <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+            </button>
+            <button onclick="closeImageModal()" class="p-2.5 bg-rose-600/90 hover:bg-rose-500 text-white rounded-xl border border-rose-400/50 shadow-[0_0_12px_rgba(244,63,94,0.4)] hover:shadow-[0_0_22px_rgba(244,63,94,0.8)] hover:scale-[1.05] transition-all ml-2" title="Close (ESC)">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Image Container with Mouse Scroll Support -->
+        <div id="image-modal-container" class="relative max-w-5xl w-full max-h-[85vh] flex items-center justify-center overflow-hidden" onclick="event.stopPropagation()">
+            <img id="image-modal-src" src="" alt="Full View" class="max-w-full max-h-[80vh] rounded-2xl object-contain border border-slate-700 shadow-2xl transition-transform duration-100 ease-out">
+        </div>
+    </div>
+
     <!-- JAVASCRIPT FRONTEND LOGIC -->
     <script>
         let items = [];
         const defaultHeaders = {
             'ngrok-skip-browser-warning': 'true'
         };
+
+        // Image Viewer State Matrix
+        let currentScale = 1;
+        let currentRotation = 0;
+
+        function updateImageTransform() {
+            const img = document.getElementById('image-modal-src');
+            if (img) {
+                img.style.transform = `scale(${currentScale}) rotate(${currentRotation}deg)`;
+            }
+        }
+
+        function openImageModal(url) {
+            const modal = document.getElementById('image-modal');
+            const img = document.getElementById('image-modal-src');
+            img.src = url;
+            
+            // Reset state
+            resetImageTransform();
+
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeImageModal() {
+            document.getElementById('image-modal').classList.add('hidden');
+            resetImageTransform();
+        }
+
+        function zoomImage(amount) {
+            currentScale = Math.min(Math.max(0.5, currentScale + amount), 5);
+            updateImageTransform();
+        }
+
+        function rotateImage(degrees) {
+            currentRotation = (currentRotation + degrees) % 360;
+            updateImageTransform();
+        }
+
+        function resetImageTransform() {
+            currentScale = 1;
+            currentRotation = 0;
+            updateImageTransform();
+        }
+
+        // Initialize Mouse Wheel Zooming & File Upload Dropzone Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('image-modal-container');
+            
+            // Mouse Wheel Zooming
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const zoomFactor = e.deltaY < 0 ? 0.15 : -0.15;
+                zoomImage(zoomFactor);
+            }, { passive: false });
+
+            // Initialize Drag & Drop Handlers for Upload Dropzone
+            initDropzone();
+        });
+
+        // Global Keyboard Shortcuts
+        window.addEventListener('keydown', (e) => {
+            // Ignore hotkeys if user is typing in form inputs/textareas
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+                if (e.key === 'Escape') closeModal();
+                return;
+            }
+
+            const imageModalOpen = !document.getElementById('image-modal').classList.contains('hidden');
+
+            if (e.key === 'Escape') {
+                closeImageModal();
+                closeModal();
+                closeDetailsModal();
+                closeSuccessModal();
+            }
+
+            if (imageModalOpen) {
+                if (e.key === '+' || e.key === '=') zoomImage(0.2);
+                if (e.key === '-' || e.key === '_') zoomImage(-0.2);
+                if (e.key === 'r' || e.key === 'R') rotateImage(90);
+                if (e.key === '0') resetImageTransform();
+            }
+        });
+
+        // Drag & Drop File Upload Handlers
+        function initDropzone() {
+            const dropzone = document.getElementById('dropzone');
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.add('dropzone-active');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.remove('dropzone-active');
+                }, false);
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files.length > 0) {
+                    const input = document.getElementById('form-image');
+                    input.files = files;
+                    handleFileSelect(files);
+                }
+            });
+        }
+
+        function handleFileSelect(files) {
+            if (files && files.length > 0) {
+                const prompt = document.getElementById('dropzone-prompt');
+                const preview = document.getElementById('dropzone-preview');
+                const filenameSpan = document.getElementById('preview-filename');
+
+                filenameSpan.innerText = files[0].name;
+                prompt.classList.add('hidden');
+                preview.classList.remove('hidden');
+                preview.classList.add('flex');
+                lucide.createIcons();
+            }
+        }
+
+        function removeSelectedFile() {
+            const input = document.getElementById('form-image');
+            const prompt = document.getElementById('dropzone-prompt');
+            const preview = document.getElementById('dropzone-preview');
+
+            input.value = '';
+            prompt.classList.remove('hidden');
+            preview.classList.add('hidden');
+            preview.classList.remove('flex');
+        }
 
         // SIDEBAR TOGGLE FUNCTIONALITY (FOR MOBILE UX)
         function toggleSidebar() {
@@ -617,8 +806,11 @@
                 <div class="bg-[#0f172a]/90 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between space-y-3 hover:border-slate-700 hover:shadow-[0_0_20px_rgba(15,23,42,0.8)] transition-all">
                     <div>
                         ${item.image_url ? `
-                            <div class="w-full h-36 rounded-xl overflow-hidden mb-3 border border-slate-800">
-                                <img src="${item.image_url}" alt="${item.title}" class="w-full h-full object-cover">
+                            <div class="w-full h-36 rounded-xl overflow-hidden mb-3 border border-slate-800 cursor-pointer group relative" onclick="openImageModal('${item.image_url}')">
+                                <img src="${item.image_url}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs font-semibold text-white gap-1">
+                                    <i data-lucide="zoom-in" class="w-4 h-4 text-indigo-400"></i> View Full
+                                </div>
                             </div>
                         ` : ''}
                         <div class="flex items-center justify-between">
@@ -669,8 +861,11 @@
             const content = document.getElementById('details-content');
             content.innerHTML = `
                 ${item.image_url ? `
-                    <div class="w-full h-48 rounded-xl overflow-hidden border border-slate-800 mb-3">
-                        <img src="${item.image_url}" alt="${item.title}" class="w-full h-full object-cover">
+                    <div class="w-full h-48 rounded-xl overflow-hidden border border-slate-800 mb-3 cursor-pointer group relative" onclick="openImageModal('${item.image_url}')">
+                        <img src="${item.image_url}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs font-semibold text-white gap-1">
+                            <i data-lucide="zoom-in" class="w-4 h-4 text-indigo-400"></i> Expand Image
+                        </div>
                     </div>
                 ` : ''}
 
@@ -737,8 +932,7 @@
                     otherInput.value = '';
                 }
             });
-            const imageInput = document.getElementById('form-image');
-            if (imageInput) imageInput.value = '';
+            removeSelectedFile();
         }
 
         // Show and Close Success Notification Modal
