@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ReclaimX - Cloud Belongings Portal</title>
     
     <!-- INLINE SVG FAVICON -->
@@ -63,9 +63,38 @@
             background-color: rgba(99, 102, 241, 0.15) !important;
             box-shadow: 0 0 25px rgba(99, 102, 241, 0.4) !important;
         }
+
+        /* iOS WebKit Backdrop Blur & Stacking Layer Fixes */
+        .backdrop-blur-md, .backdrop-blur-sm {
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+        }
+
+        .fix-ios-layer {
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+
+        /* Prevent auto-zoom on iOS Safari by maintaining minimum 16px font on touch devices */
+        @media (max-width: 767px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
+
+        button, input, select, textarea {
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Modal Scroll Lock Helper */
+        body.modal-open {
+            overflow: hidden !important;
+            touch-action: none;
+        }
     </style>
 </head>
-<body class="animated-bg text-slate-100 font-sans min-h-screen flex relative overflow-x-hidden">
+<body class="animated-bg text-slate-100 font-sans min-h-[100dvh] flex relative overflow-x-hidden">
 
     <!-- DYNAMIC MOVING AMBIENT GLOW ORBS -->
     <div class="fixed top-[-10%] right-[-10%] w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[140px] pointer-events-none -z-10 animate-ambient-1"></div>
@@ -73,7 +102,7 @@
     <div class="fixed top-[40%] left-[30%] w-[450px] h-[450px] bg-slate-700/15 rounded-full blur-[120px] pointer-events-none -z-10 animate-ambient-1" style="animation-duration: 30s;"></div>
 
     <!-- STICKY MOBILE TOP BAR (VISIBLE ON MOBILE ONLY) -->
-    <header class="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0f172a]/95 backdrop-blur-md border-b border-slate-800 z-30 flex items-center justify-between px-4">
+    <header class="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0f172a]/95 backdrop-blur-md border-b border-slate-800 z-30 flex items-center justify-between px-4 fix-ios-layer">
         <!-- Sidebar Toggle Button (Left) -->
         <button id="sidebar-toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Sidebar" class="p-2 bg-indigo-600 text-white rounded-xl border border-indigo-400/50 shadow-[0_0_10px_rgba(99,102,241,0.4)] hover:shadow-[0_0_20px_rgba(99,102,241,0.8)] hover:bg-indigo-500 hover:scale-[1.02] transition-all focus:outline-none">
             <i data-lucide="menu" class="w-5 h-5"></i>
@@ -95,10 +124,10 @@
     </header>
 
     <!-- BACKDROP OVERLAY (MOBILE ONLY) -->
-    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden md:hidden transition-all duration-300"></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden md:hidden transition-all duration-300 fix-ios-layer"></div>
 
     <!-- LEFT SIDEBAR -->
-    <aside id="sidebar" class="w-64 bg-[#0f172a]/90 backdrop-blur-md border-r border-slate-800 flex flex-col justify-between p-4 min-h-screen shrink-0 fixed inset-y-0 left-0 z-50 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out">
+    <aside id="sidebar" class="w-64 bg-[#0f172a]/90 backdrop-blur-md border-r border-slate-800 flex flex-col justify-between p-4 min-h-[100dvh] shrink-0 fixed inset-y-0 left-0 z-50 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out fix-ios-layer">
         <div class="space-y-6">
             <!-- App Branding + Mobile Close Button -->
             <div class="flex items-center justify-between px-2">
@@ -310,25 +339,25 @@
     </main>
 
     <!-- MODAL FOR REPORTING ITEM -->
-    <div id="report-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-[#0f172a] border border-slate-800 max-w-md w-full p-6 rounded-2xl shadow-2xl">
+    <div id="report-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 fix-ios-layer">
+        <div class="bg-[#0f172a] border border-slate-800 max-w-md w-full p-6 rounded-2xl shadow-2xl max-h-[90dvh] overflow-y-auto">
             <div class="flex justify-between items-center pb-3 border-b border-slate-800">
                 <h3 id="modal-title" class="text-base font-bold text-white">Report Item</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <form onsubmit="submitReport(event)" class="space-y-3 mt-4">
                 <input type="hidden" id="form-type" value="lost">
                 
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Title *</label>
-                    <input type="text" id="form-title" required placeholder="e.g. Scientific Calculator Casio FX-991EX" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                    <input type="text" id="form-title" required placeholder="e.g. Scientific Calculator Casio FX-991EX" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-sm sm:text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <!-- Item -->
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Item *</label>
-                        <select id="form-item" required onchange="handleOtherToggle('item')" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        <select id="form-item" required onchange="handleOtherToggle('item')" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-sm sm:text-xs text-white focus:outline-none focus:border-indigo-500">
                             <option value="" disabled selected>--SELECT--</option>
                             <option value="Calculator">Calculator</option>
                             <option value="ID Card">ID Card</option>
@@ -338,13 +367,13 @@
                             <option value="OTHER">-- OTHER --</option>
                         </select>
                         <!-- Custom Item Input -->
-                        <input type="text" id="form-item-other" placeholder="Enter Item..." class="hidden mt-2 w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                        <input type="text" id="form-item-other" placeholder="Enter Item..." class="hidden mt-2 w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-1.5 text-sm sm:text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
                     </div>
 
                     <!-- Color -->
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Color *</label>
-                        <select id="form-color" required onchange="handleOtherToggle('color')" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        <select id="form-color" required onchange="handleOtherToggle('color')" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-sm sm:text-xs text-white focus:outline-none focus:border-indigo-500">
                             <option value="" disabled selected>--SELECT--</option>
                             <option value="Black">Black</option>
                             <option value="Blue">Blue</option>
@@ -354,13 +383,13 @@
                             <option value="OTHER">-- OTHER --</option>
                         </select>
                         <!-- Custom Color Input -->
-                        <input type="text" id="form-color-other" placeholder="Enter Color..." class="hidden mt-2 w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                        <input type="text" id="form-color-other" placeholder="Enter Color..." class="hidden mt-2 w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-1.5 text-sm sm:text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
                     </div>
 
                     <!-- Location -->
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Location *</label>
-                        <select id="form-location" required onchange="handleOtherToggle('location')" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        <select id="form-location" required onchange="handleOtherToggle('location')" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl p-2 text-sm sm:text-xs text-white focus:outline-none focus:border-indigo-500">
                             <option value="" disabled selected>--SELECT--</option>
                             <option value="Library">Library</option>
                             <option value="Canteen">Canteen</option>
@@ -369,24 +398,24 @@
                             <option value="OTHER">-- OTHER --</option>
                         </select>
                         <!-- Custom Location Input -->
-                        <input type="text" id="form-location-other" placeholder="Enter Location..." class="hidden mt-2 w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                        <input type="text" id="form-location-other" placeholder="Enter Location..." class="hidden mt-2 w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-1.5 text-sm sm:text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Reporter Name</label>
-                        <input type="text" id="form-name" placeholder="Alex Rivera" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                        <input type="text" id="form-name" placeholder="Alex Rivera" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-sm sm:text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Phone Number</label>
-                        <input type="tel" id="form-phone" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="5550000000" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                        <input type="tel" id="form-phone" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="5550000000" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-sm sm:text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">College Email *</label>
-                    <input type="email" id="form-email" required placeholder="alex.r@college.edu" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                    <input type="email" id="form-email" required placeholder="alex.r@college.edu" class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-sm sm:text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
                 </div>
 
                 <!-- DRAG & DROP FILE UPLOAD AREA -->
@@ -396,8 +425,8 @@
                         <input type="file" id="form-image" accept="image/*" class="hidden" onchange="handleFileSelect(this.files)">
                         <div id="dropzone-prompt" class="space-y-1">
                             <i data-lucide="upload-cloud" class="w-6 h-6 text-indigo-400 mx-auto"></i>
-                            <p class="text-xs font-semibold text-slate-300">Click to browse or drag & drop photo here</p>
-                            <p class="text-[10px] text-slate-500">Supports JPG, PNG, WEBP, GIF</p>
+                            <p class="text-xs font-semibold text-slate-300">Tap to choose or drag photo here</p>
+                            <p class="text-[10px] text-slate-500">JPG, PNG, WEBP, GIF</p>
                         </div>
                         <div id="dropzone-preview" class="hidden items-center justify-between bg-indigo-950/40 border border-indigo-500/30 px-3 py-2 rounded-xl text-xs text-indigo-300">
                             <span id="preview-filename" class="truncate font-semibold max-w-[200px]">filename.jpg</span>
@@ -410,7 +439,7 @@
 
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Description</label>
-                    <textarea id="form-desc" rows="3" placeholder="Provide distinguishing features..." class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 resize-none"></textarea>
+                    <textarea id="form-desc" rows="3" placeholder="Provide distinguishing features..." class="w-full bg-[#0b1120] border border-slate-800 rounded-xl px-3 py-2 text-sm sm:text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 resize-none"></textarea>
                 </div>
 
                 <div class="flex justify-end space-x-2 pt-2">
@@ -422,7 +451,7 @@
     </div>
 
     <!-- SUCCESS NOTIFICATION MODAL -->
-    <div id="success-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div id="success-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 fix-ios-layer">
         <div class="bg-[#0f172a] border border-emerald-500/40 max-w-xs w-full p-6 rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.25)] text-center space-y-4">
             <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.5)] flex items-center justify-center mx-auto">
                 <i data-lucide="check-circle" class="w-6 h-6"></i>
@@ -438,14 +467,14 @@
     </div>
 
     <!-- ITEM DETAILS MODAL -->
-    <div id="details-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-[#0f172a] border border-slate-800 max-w-md w-full p-6 rounded-2xl shadow-2xl space-y-4">
+    <div id="details-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 fix-ios-layer">
+        <div class="bg-[#0f172a] border border-slate-800 max-w-md w-full p-6 rounded-2xl shadow-2xl space-y-4 max-h-[90dvh] overflow-y-auto">
             <div class="flex justify-between items-center pb-3 border-b border-slate-800">
                 <h3 class="text-base font-bold text-white flex items-center space-x-2">
                     <i data-lucide="info" class="w-4 h-4 text-indigo-400"></i>
                     <span>Item Details</span>
                 </h3>
-                <button onclick="closeDetailsModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="closeDetailsModal()" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
             <div id="details-content" class="space-y-3">
@@ -459,7 +488,7 @@
     </div>
 
     <!-- FULL IMAGE LIGHTBOX MODAL WITH ZOOM, ROTATE & SCROLL -->
-    <div id="image-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden flex flex-col items-center justify-center p-4 z-50 select-none" onclick="closeImageModal()">
+    <div id="image-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden flex flex-col items-center justify-center p-4 z-50 select-none fix-ios-layer" onclick="closeImageModal()">
         
         <!-- Top Toolbar Controls with Glow Shadows -->
         <div class="absolute top-4 right-4 flex items-center space-x-2 z-10" onclick="event.stopPropagation()">
@@ -497,6 +526,14 @@
         let currentScale = 1;
         let currentRotation = 0;
 
+        function lockBodyScroll(lock) {
+            if (lock) {
+                document.body.classList.add('modal-open');
+            } else {
+                document.body.classList.remove('modal-open');
+            }
+        }
+
         function updateImageTransform() {
             const img = document.getElementById('image-modal-src');
             if (img) {
@@ -509,16 +546,16 @@
             const img = document.getElementById('image-modal-src');
             img.src = url;
             
-            // Reset state
             resetImageTransform();
-
             modal.classList.remove('hidden');
+            lockBodyScroll(true);
             lucide.createIcons();
         }
 
         function closeImageModal() {
             document.getElementById('image-modal').classList.add('hidden');
             resetImageTransform();
+            lockBodyScroll(false);
         }
 
         function zoomImage(amount) {
@@ -542,19 +579,19 @@
             const container = document.getElementById('image-modal-container');
             
             // Mouse Wheel Zooming
-            container.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                const zoomFactor = e.deltaY < 0 ? 0.15 : -0.15;
-                zoomImage(zoomFactor);
-            }, { passive: false });
+            if (container) {
+                container.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const zoomFactor = e.deltaY < 0 ? 0.15 : -0.15;
+                    zoomImage(zoomFactor);
+                }, { passive: false });
+            }
 
-            // Initialize Drag & Drop Handlers for Upload Dropzone
             initDropzone();
         });
 
         // Global Keyboard Shortcuts
         window.addEventListener('keydown', (e) => {
-            // Ignore hotkeys if user is typing in form inputs/textareas
             if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
                 if (e.key === 'Escape') closeModal();
                 return;
@@ -577,30 +614,34 @@
             }
         });
 
-        // Drag & Drop File Upload Handlers
+        // Drag & Drop / Mobile Touch File Upload Handlers
         function initDropzone() {
             const dropzone = document.getElementById('dropzone');
+            if (!dropzone) return;
 
-            ['dragenter', 'dragover'].forEach(eventName => {
+            ['dragenter', 'dragover', 'dragleave', 'drop', 'touchmove'].forEach(eventName => {
                 dropzone.addEventListener(eventName, (e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                }, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropzone.addEventListener(eventName, () => {
                     dropzone.classList.add('dropzone-active');
                 }, false);
             });
 
             ['dragleave', 'drop'].forEach(eventName => {
-                dropzone.addEventListener(eventName, (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                dropzone.addEventListener(eventName, () => {
                     dropzone.classList.remove('dropzone-active');
                 }, false);
             });
 
             dropzone.addEventListener('drop', (e) => {
                 const dt = e.dataTransfer;
-                const files = dt.files;
-                if (files.length > 0) {
+                const files = dt ? dt.files : null;
+                if (files && files.length > 0) {
                     const input = document.getElementById('form-image');
                     input.files = files;
                     handleFileSelect(files);
@@ -640,6 +681,7 @@
             const isCollapsed = sidebar.classList.toggle('-translate-x-full');
             
             overlay.classList.toggle('hidden', isCollapsed);
+            lockBodyScroll(!isCollapsed && window.innerWidth < 768);
             lucide.createIcons();
         }
 
@@ -688,7 +730,6 @@
                 }
             });
 
-            // Auto-close mobile sidebar on tab selection
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebar');
                 if (!sidebar.classList.contains('-translate-x-full')) {
@@ -707,7 +748,6 @@
             document.getElementById('stat-found').innerText = activeFound.length;
             document.getElementById('stat-resolved').innerText = resolved.length;
 
-            // Render Recent Items
             const feed = document.getElementById('dashboard-feed');
             feed.innerHTML = items.slice(0, 6).map(item => renderItemCard(item)).join('');
             lucide.createIcons();
@@ -898,11 +938,13 @@
             `;
 
             document.getElementById('details-modal').classList.remove('hidden');
+            lockBodyScroll(true);
             lucide.createIcons();
         }
 
         function closeDetailsModal() {
             document.getElementById('details-modal').classList.add('hidden');
+            lockBodyScroll(false);
         }
 
         // Open Form Modal
@@ -910,6 +952,7 @@
             document.getElementById('form-type').value = type;
             document.getElementById('modal-title').innerText = `Report ${type === 'lost' ? 'Lost' : 'Found'} Item`;
             document.getElementById('report-modal').classList.remove('hidden');
+            lockBodyScroll(true);
 
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebar');
@@ -922,6 +965,8 @@
         // Close Form Modal & Reset Dropdowns
         function closeModal() {
             document.getElementById('report-modal').classList.add('hidden');
+            lockBodyScroll(false);
+
             ['item', 'color', 'location'].forEach(field => {
                 const selectEl = document.getElementById(`form-${field}`);
                 const otherInput = document.getElementById(`form-${field}-other`);
@@ -938,11 +983,13 @@
         // Show and Close Success Notification Modal
         function showSuccessModal() {
             document.getElementById('success-modal').classList.remove('hidden');
+            lockBodyScroll(true);
             lucide.createIcons();
         }
 
         function closeSuccessModal() {
             document.getElementById('success-modal').classList.add('hidden');
+            lockBodyScroll(false);
         }
 
         // API Submissions with Image File Upload & FormData
