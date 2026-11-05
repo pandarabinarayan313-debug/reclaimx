@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-[#0b1120]">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -51,8 +51,14 @@
             animation: ambientMove 24s ease-in-out infinite reverse;
         }
 
+        /* Prevent Safari default white background leak */
+        html, body {
+            background-color: #0b1120 !important;
+            color: #f8fafc;
+        }
+
         .animated-bg {
-            background: linear-gradient(-45deg, #0b1120, #0f172a, #1e1b4b, #090d16);
+            background: #0b1120 linear-gradient(-45deg, #0b1120, #0f172a, #1e1b4b, #090d16) !important;
             background-size: 400% 400%;
             animation: gradientShift 15s ease infinite;
         }
@@ -94,7 +100,7 @@
         }
     </style>
 </head>
-<body class="animated-bg text-slate-100 font-sans min-h-[100dvh] flex relative overflow-x-hidden">
+<body class="animated-bg text-slate-100 font-sans min-h-[100dvh] flex relative overflow-x-hidden bg-[#0b1120]">
 
     <!-- DYNAMIC MOVING AMBIENT GLOW ORBS -->
     <div class="fixed top-[-10%] right-[-10%] w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[140px] pointer-events-none -z-10 animate-ambient-1"></div>
@@ -197,7 +203,7 @@
     </aside>
 
     <!-- MAIN CONTENT AREA -->
-    <main id="main-content" class="flex-1 p-4 sm:p-8 overflow-y-auto max-w-7xl w-full min-w-0 pt-20 md:pt-8 transition-all duration-300 flex flex-col justify-between">
+    <main id="main-content" class="flex-1 p-4 sm:p-8 overflow-y-auto max-w-7xl w-full min-w-0 pt-20 md:pt-8 transition-all duration-300 flex flex-col justify-between bg-[#0b1120]">
 
         <!-- TAB CONTENT CONTAINER -->
         <div>
@@ -228,7 +234,7 @@
 
                 <!-- Dashboard Statistics Matrix -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-[#0f172a]/80 border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
+                    <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
                         <div>
                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Lost</p>
                             <h3 id="stat-lost" class="text-2xl font-bold text-white mt-2">0</h3>
@@ -237,7 +243,7 @@
                         <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-400"></i>
                     </div>
 
-                    <div class="bg-[#0f172a]/80 border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
+                    <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
                         <div>
                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Found</p>
                             <h3 id="stat-found" class="text-2xl font-bold text-white mt-2">0</h3>
@@ -246,7 +252,7 @@
                         <i data-lucide="package" class="w-5 h-5 text-emerald-400"></i>
                     </div>
 
-                    <div class="bg-[#0f172a]/80 border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
+                    <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
                         <div>
                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Matches</p>
                             <h3 id="stat-matches" class="text-2xl font-bold text-amber-300 mt-2">0</h3>
@@ -255,7 +261,7 @@
                         <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i>
                     </div>
 
-                    <div class="bg-[#0f172a]/80 border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
+                    <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex justify-between items-start">
                         <div>
                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Claimed</p>
                             <h3 id="stat-resolved" class="text-2xl font-bold text-white mt-2">0</h3>
@@ -266,7 +272,7 @@
                 </div>
 
                 <!-- Smart Cross-Match Highlight Alert Banner -->
-                <div id="match-banner" class="hidden bg-slate-900/90 border border-amber-500/40 rounded-2xl p-4 flex items-center justify-between shadow-[0_0_20px_rgba(245,158,11,0.15)]">
+                <div id="match-banner" class="hidden bg-[#0f172a] border border-amber-500/40 rounded-2xl p-4 flex items-center justify-between shadow-[0_0_20px_rgba(245,158,11,0.15)]">
                     <div class="flex items-center space-x-3">
                         <div class="p-2.5 bg-amber-500/20 text-amber-300 rounded-xl border border-amber-500/30">
                             <i data-lucide="sparkles" class="w-5 h-5"></i>
@@ -300,7 +306,7 @@
 
             <!-- TAB 2: BROWSE FEED VIEW -->
             <section id="tab-browse" class="hidden space-y-6">
-                <div class="bg-[#0f172a]/90 border border-slate-800 p-4 rounded-2xl flex flex-col md:flex-row gap-3 justify-between">
+                <div class="bg-[#0f172a] border border-slate-800 p-4 rounded-2xl flex flex-col md:flex-row gap-3 justify-between">
                     <div class="relative flex-1 flex items-center">
                         <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                         <input id="search-input" oninput="renderBrowse()" type="text" placeholder="Search title, keywords, location..." class="w-full bg-[#0b1120] border border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
@@ -317,7 +323,7 @@
 
             <!-- TAB 3: SMART MATCHER VIEW -->
             <section id="tab-matcher" class="hidden space-y-6">
-                <div class="bg-[#0f172a]/90 border border-amber-500/30 p-6 rounded-2xl flex items-center space-x-4">
+                <div class="bg-[#0f172a] border border-amber-500/30 p-6 rounded-2xl flex items-center space-x-4">
                     <div class="p-3 bg-amber-500/20 text-amber-300 rounded-xl border border-amber-500/30">
                         <i data-lucide="sparkles" class="w-6 h-6"></i>
                     </div>
@@ -809,12 +815,12 @@
 
             const matcherFeed = document.getElementById('matcher-feed');
             if (matches.length === 0) {
-                matcherFeed.innerHTML = `<div class="bg-[#0f172a]/90 border border-slate-800 p-8 rounded-2xl text-center text-xs text-slate-500">No match candidates detected currently.</div>`;
+                matcherFeed.innerHTML = `<div class="bg-[#0f172a] border border-slate-800 p-8 rounded-2xl text-center text-xs text-slate-500">No match candidates detected currently.</div>`;
                 return;
             }
 
             matcherFeed.innerHTML = matches.map(m => `
-                <div class="bg-[#0f172a]/90 border border-slate-800 p-4 rounded-2xl space-y-3">
+                <div class="bg-[#0f172a] border border-slate-800 p-4 rounded-2xl space-y-3">
                     <div class="flex items-center justify-between pb-2 border-b border-slate-800">
                         <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">${m.score}% MATCH CONFIDENCE</span>
                         <button onclick="resolvePair(${m.lost.id}, ${m.found.id})" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg border border-indigo-400/50 shadow-[0_0_10px_rgba(99,102,241,0.4)] hover:shadow-[0_0_18px_rgba(99,102,241,0.8)] transition-all">Confirm Pair & Resolve</button>
@@ -843,7 +849,7 @@
             const itemType = item.item || item.category || 'N/A';
 
             return `
-                <div class="bg-[#0f172a]/90 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between space-y-3 hover:border-slate-700 hover:shadow-[0_0_20px_rgba(15,23,42,0.8)] transition-all">
+                <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between space-y-3 hover:border-slate-700 hover:shadow-[0_0_20px_rgba(15,23,42,0.8)] transition-all">
                     <div>
                         ${item.image_url ? `
                             <div class="w-full h-36 rounded-xl overflow-hidden mb-3 border border-slate-800 cursor-pointer group relative" onclick="openImageModal('${item.image_url}')">
